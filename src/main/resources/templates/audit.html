@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Audit Log</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: #f4f7f6;
+            color: #333;
+            margin: 0;
+            padding: 2rem;
+        }
+        header {
+            max-width: 1200px;
+            margin: 0 auto 2rem auto;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid #004a91;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        h1 {
+            color: #004a91;
+            margin: 0;
+            font-size: 1.5rem;
+        }
+        header a {
+            background-color: #004a91;
+            color: white;
+            font-size: 1rem;
+            font-weight: 600;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            cursor: pointer;
+            text-decoration: none;
+            transition: background-color 0.2s ease;
+        }
+        header a:hover {
+            background-color: #003b73;
+        }
+        main {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.07);
+            overflow: hidden; /* To contain the table borders */
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            padding: 1rem 1.5rem;
+            text-align: left;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        th {
+            background-color: #f9f9f9;
+            font-size: 0.9rem;
+            color: #555;
+            text-transform: uppercase;
+        }
+        tr:hover {
+            background-color: #f0f8ff;
+        }
+        .status-success {
+            color: #2e7d32;
+            font-weight: 600;
+        }
+        .status-failed {
+            color: #c62828;
+            font-weight: 600;
+        }
+        .view-link {
+            color: #004a91;
+            font-weight: 600;
+            text-decoration: none;
+        }
+        .view-link:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>Refactoring Audit Log</h1>
+    <a href="/">Refactor Another File</a>
+</header>
+
+<main>
+    <table>
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>Filename</th>
+            <th>Timestamp</th>
+            <th>File Size (KB)</th>
+            <th>Status</th>
+            <th>Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        <!--
+          Thymeleaf (th:each) loops over the "logs" object
+          that the controller added to the model.
+        -->
+        <tr th:if="${logs.isEmpty()}">
+            <td colspan="6" style="text-align: center; padding: 2rem;">No refactoring jobs found.</td>
+        </tr>
+        <tr th:each="log : ${logs}">
+            <td th:text="${log.id}">1</td>
+            <td th:text="${log.originalFilename}">login.html</td>
+            <!-- Format the timestamp to be readable -->
+            <td th:text="${#temporals.format(log.uploadTimestamp, 'dd-MMM-yyyy HH:mm:ss')}">2025-11-01 10:30:00</td>
+            <!-- Format file size -->
+            <td th:text="${String.format('%.2f', log.fileSize / 1024.0)}">15.20</td>
+            <td>
+                <!-- Add color based on status -->
+                <span th:text="${log.status}"
+                      th:class="${log.status == 'SUCCESS' ? 'status-success' : 'status-failed'}">
+                    SUCCESS
+                </span>
+            </td>
+            <td>
+                <!-- Link to the results page for this specific ID -->
+                <a th:href="@{/results/{id}(id=${log.id})}" class="view-link">View Results</a>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</main>
+
+</body>
+</html>
+
